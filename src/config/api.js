@@ -1,17 +1,29 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+// Ambil URL dari env
+let envUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+// PENGAMAN: Hapus trailing slash (/) jika ada di akhir URL
+if (envUrl.endsWith('/')) {
+    envUrl = envUrl.slice(0, -1);
+}
+
+const BASE_URL = envUrl;
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Interceptor agar kita langsung dapat data bersih
+// Interceptor
 apiClient.interceptors.response.use(
   (response) => response.data,
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error("API Error:", error);
+    return Promise.reject(error);
+  }
 );
 
-// PERBAIKAN: Tambahkan BASE_URL di dalam export
 export { apiClient, BASE_URL };
