@@ -1,14 +1,13 @@
 import axios from 'axios';
 
-// Ambil URL dari env
-let envUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+// 1. Ambil URL dari env atau hardcode
+let rawUrl = import.meta.env.VITE_API_BASE_URL || 'https://backend-jual-akun.vercel.app';
 
-// PENGAMAN: Hapus trailing slash (/) jika ada di akhir URL
-if (envUrl.endsWith('/')) {
-    envUrl = envUrl.slice(0, -1);
-}
+// 2. PEMBERSIHAN TOTAL: Hapus semua garis miring di akhir
+// Contoh: "https://domain.com///" -> "https://domain.com"
+const BASE_URL = rawUrl.replace(/\/+$/, "");
 
-const BASE_URL = envUrl;
+console.log("🔗 API URL Final:", BASE_URL); // Cek di Console Browser nanti
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
