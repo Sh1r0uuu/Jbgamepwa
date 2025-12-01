@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import userService from "../services/userService"; // Perbaikan import
-import { UserPlus, ArrowLeft } from "lucide-react";
+import userService from "../services/userService";
+import { UserPlus, ArrowLeft, ShieldCheck } from "lucide-react";
 import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
@@ -11,7 +11,7 @@ export default function RegisterPage() {
     name: "",
     username: "",
     password: "",
-    whatsapp_number: "" 
+    whatsapp_number: ""
   });
 
   const handleChange = (e) => {
@@ -21,61 +21,106 @@ export default function RegisterPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
+    if (!form.name || !form.username || !form.password || !form.whatsapp_number) {
+      toast.error("All fields are required!");
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Menggunakan userService
       await userService.register(form);
-      toast.success("Registrasi Berhasil! Silakan Login.");
+      toast.success("REGISTRATION SUCCESSFUL!");
       navigate("/login");
     } catch (err) {
       console.error(err);
-      toast.error("Gagal Mendaftar. Username mungkin sudah dipakai.");
+      toast.error("Registration Failed. Username might be taken.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-6 font-sans py-10">
-      <div className="bg-[#1E293B] p-8 rounded-3xl border border-white/10 w-full max-w-sm shadow-2xl shadow-violet-900/20">
-        
-        <button onClick={() => navigate('/login')} className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 text-sm">
-            <ArrowLeft size={16} /> Kembali ke Login
+    <div className="min-h-screen bg-white text-black font-sans flex flex-col items-center justify-center px-6 py-10 relative overflow-hidden">
+
+      {/* Background Decoration */}
+      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-red-600/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-neutral-100 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="w-full max-w-md relative z-10">
+        <button onClick={() => navigate('/login')} className="flex items-center gap-2 text-neutral-500 hover:text-black mb-8 text-xs font-bold uppercase tracking-widest transition-colors group">
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Login
         </button>
 
-        <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg">
-                <UserPlus className="text-white" size={32} />
+        <div className="bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-black text-white mx-auto flex items-center justify-center mb-4 shadow-lg">
+              <UserPlus size={32} />
             </div>
-            <h1 className="text-2xl font-black text-white">Daftar Akun</h1>
-            <p className="text-slate-400 text-sm">Bergabunglah dengan komunitas GGEZ</p>
+            <h1 className="text-3xl font-black text-black uppercase tracking-tighter">
+              JOIN <span className="text-red-600">KAI.</span>
+            </h1>
+            <p className="text-neutral-500 text-xs font-bold tracking-widest mt-2 uppercase">Create your account</p>
+          </div>
+
+          <form onSubmit={handleRegister} className="space-y-5">
+            <div className="group">
+              <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">Full Name</label>
+              <input
+                name="name"
+                className="w-full p-3 bg-neutral-50 border-2 border-neutral-200 text-black font-bold focus:border-black focus:bg-white outline-none transition-all placeholder-neutral-300"
+                placeholder="YOUR NAME"
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="group">
+              <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">Username</label>
+              <input
+                name="username"
+                className="w-full p-3 bg-neutral-50 border-2 border-neutral-200 text-black font-bold focus:border-black focus:bg-white outline-none transition-all placeholder-neutral-300"
+                placeholder="UNIQUE USERNAME"
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="group">
+              <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">WhatsApp Number</label>
+              <input
+                name="whatsapp_number"
+                type="tel"
+                className="w-full p-3 bg-neutral-50 border-2 border-neutral-200 text-black font-bold focus:border-black focus:bg-white outline-none transition-all placeholder-neutral-300 font-mono"
+                placeholder="0812..."
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="group">
+              <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">Password</label>
+              <input
+                name="password"
+                type="password"
+                className="w-full p-3 bg-neutral-50 border-2 border-neutral-200 text-black font-bold focus:border-black focus:bg-white outline-none transition-all placeholder-neutral-300"
+                placeholder="••••••"
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <button disabled={loading} className="w-full bg-black hover:bg-red-600 text-white py-4 font-black uppercase tracking-widest shadow-lg hover:shadow-none hover:translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8 border-2 border-black">
+              {loading ? "CREATING ACCOUNT..." : "REGISTER NOW"}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t-2 border-neutral-100 text-center">
+            <div className="flex items-center justify-center gap-2 text-neutral-400 text-[10px] font-bold uppercase tracking-wider">
+              <ShieldCheck size={14} /> Secure Registration
+            </div>
+          </div>
         </div>
-
-        <form onSubmit={handleRegister} className="space-y-4">
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase ml-1">Nama Lengkap</label>
-            <input name="name" className="w-full p-3 bg-[#0F172A] text-white rounded-xl border border-white/10 focus:border-green-500 focus:outline-none mt-1" placeholder="Nama Anda" onChange={handleChange} required />
-          </div>
-          
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase ml-1">Username</label>
-            <input name="username" className="w-full p-3 bg-[#0F172A] text-white rounded-xl border border-white/10 focus:border-green-500 focus:outline-none mt-1" placeholder="Username unik" onChange={handleChange} required />
-          </div>
-
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase ml-1">Nomor WhatsApp</label>
-            <input name="whatsapp_number" type="tel" className="w-full p-3 bg-[#0F172A] text-white rounded-xl border border-white/10 focus:border-green-500 focus:outline-none mt-1" placeholder="628..." onChange={handleChange} required />
-          </div>
-
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase ml-1">Password</label>
-            <input name="password" type="password" className="w-full p-3 bg-[#0F172A] text-white rounded-xl border border-white/10 focus:border-green-500 focus:outline-none mt-1" placeholder="••••••" onChange={handleChange} required />
-          </div>
-
-          <button disabled={loading} className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90 text-white py-4 rounded-xl font-bold flex justify-center gap-2 shadow-lg shadow-green-600/20 transition-all active:scale-95 disabled:opacity-50 mt-6">
-            {loading ? "Mendaftar..." : "Buat Akun Sekarang"}
-          </button>
-        </form>
       </div>
     </div>
   );
